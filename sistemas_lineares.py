@@ -30,6 +30,18 @@ def _preparar_sistema(A, b, x0, tol, max_iter):
     return matriz, vetor, aproximacao
 
 
+def formatar_solucao(solucao):
+    """
+    Gera duas representacoes do vetor solucao:
+    - enxuta: valores arredondados sem casas decimais com np.around (inteiros puros)
+    - exata: valores mantidos em notacao cientifica no padrao Python/NumPy (precisao total)
+    """
+    arredondados = np.around(np.asarray(solucao, dtype=float), decimals=0).astype(int)
+    texto_enxuto = ", ".join(f"x{i + 1} = {valor}" for i, valor in enumerate(arredondados))
+    texto_exato = ", ".join(f"x{i + 1} = {float(valor):.8e}" for i, valor in enumerate(solucao))
+    return texto_enxuto, texto_exato
+
+
 def jacobi(A, b, x0=None, tol=1e-5, max_iter=100):
     A, b, x = _preparar_sistema(A, b, x0, tol, max_iter)
     n = len(b)

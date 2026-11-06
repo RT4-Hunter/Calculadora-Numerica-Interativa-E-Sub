@@ -1,9 +1,10 @@
 import re
 
+import numpy as np
 from flask import Flask, render_template, request
 
-from interpolacao.interpolacao import interpolacao_lagrange
-from interpolacao.sistemas_lineares import gauss_seidel, jacobi
+from interpolacao import interpolacao_lagrange
+from sistemas_lineares import formatar_solucao, gauss_seidel, jacobi
 
 
 app = Flask(__name__)
@@ -26,7 +27,7 @@ def _ler_matriz(texto: str) -> list[list[float]]:
     return [_ler_numeros(linha, "uma linha da matriz A") for linha in linhas]
 
 
-def _calcular_sistema(metodo: str) -> tuple[str, str]:
+def _calcular_sistema(metodo: str) -> tuple[str, str, str]:
     matriz = _ler_matriz(request.form.get("matriz", ""))
     vetor = _ler_numeros(request.form.get("vetor", ""), "o vetor b")
     aproximacao_texto = request.form.get("aproximacao", "").strip()
@@ -46,11 +47,11 @@ def _calcular_sistema(metodo: str) -> tuple[str, str]:
         tol=tolerancia,
         max_iter=max_iteracoes,
     )
-    valores = ", ".join(f"x{indice + 1} = {valor:.8g}" for indice, valor in enumerate(solucao))
-    return f"Solucoes: {valores}", f"Iteracoes realizadas: {iteracoes}"
+    enxuto, exato = formatar_solucao(solucao)
+    return enxuto, exato, f"Iteracoes realizadas: {iteracoes}"
 
 
-def _calcular_lagrange() -> tuple[str, str]:
+def _calcular_lagrange() -> tuple[str, str, str]:
     linhas = [linha.strip() for linha in request.form.get("pontos", "").splitlines() if linha.strip()]
     if not linhas:
         raise ValueError("Informe pelo menos um ponto (x, y).")
@@ -68,12 +69,15 @@ def _calcular_lagrange() -> tuple[str, str]:
         raise ValueError("Informe um valor numerico para x.") from erro
 
     resultado = interpolacao_lagrange(pontos, x)
-    return f"Resultado: P({x:g}) = {resultado:.8g}", ""
+    enxuto = f"P({x:g}) = {int(np.around(resultado))}"
+    exato = f"P({x:g}) = {resultado:.8e}"
+    return enxuto, exato, ""
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    resultado = None
+    resultado_enxuto = None
+    resultado_exato = None
     detalhe = None
     erro = None
     metodo = request.form.get("metodo", "jacobi")
@@ -81,9 +85,9 @@ def index():
     if request.method == "POST":
         try:
             if metodo in {"jacobi", "gauss_seidel"}:
-                resultado, detalhe = _calcular_sistema(metodo)
+                resultado_enxuto, resultado_exato, detalhe = _calcular_sistema(metodo)
             elif metodo == "lagrange":
-                resultado, detalhe = _calcular_lagrange()
+                resultado_enxuto, resultado_exato, detalhe = _calcular_lagrange()
             else:
                 raise ValueError("Selecione um metodo valido.")
         except (ValueError, OverflowError, TypeError) as excecao:
@@ -92,7 +96,9 @@ def index():
     return render_template(
         "index.html",
         metodo=metodo,
-        resultado=resultado,
+        resultado_enxuto=resultado_enxuto,
+        resultado_exato=resultado_exato,
+        resultado=resultado_enxuto,
         detalhe=detalhe,
         erro=erro,
         dados=request.form if request.method == "POST" else {},

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Numérica Interativa | Métodos Numéricos</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            --surface-bg: #f8fafc;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--surface-bg);
+            color: #1e293b;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2.5rem 1rem 3rem 1rem;
+            margin-bottom: -1.5rem;
+            box-shadow: 0 4px 20px rgba(30, 58, 138, 0.15);
+        }
+
+        .main-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        .nav-pills .nav-link {
+            color: #64748b;
+            font-weight: 500;
+            border-radius: 0.6rem;
+            padding: 0.75rem 1.25rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .nav-pills .nav-link:hover {
+            color: #1e3a8a;
+            background-color: #f1f5f9;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.885rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-control, .form-select {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        textarea.code-font, input.code-font {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .helper-text {
+            font-size: 0.785rem;
+            color: #64748b;
+            margin-top: 0.3rem;
+        }
+
+        .btn-calc {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .btn-calc:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+
+        .btn-calc:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline-secondary {
+            border-color: #cbd5e1;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+            color: #1e293b;
+        }
+
+        .results-container {
+            border-radius: 0.85rem;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+        }
+
+        .result-box-simple {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-left: 4px solid #10b981;
+            border-radius: 0.65rem;
+            padding: 1rem 1.15rem;
+        }
+
+        .result-box-scientific {
+            background-color: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid #3b82f6;
+            border-radius: 0.65rem;
+            padding: 1rem 1.15rem;
+        }
+
+        .result-code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            word-break: break-all;
+            background: #ffffff;
+            padding: 0.6rem 0.85rem;
+            border-radius: 0.45rem;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .error-box {
+            border-radius: 0.75rem;
+            border-left: 5px solid #ef4444;
+            background-color: #fef2f2;
+            color: #991b1b;
+            padding: 1.25rem 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .badge-academic {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 9999px;
+            padding: 0.35rem 0.85rem;
+        }
+
+        footer {
+            margin-top: auto;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+            padding: 1.25rem 0;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Principal -->
+    <header class="header-section text-center">
+        <div class="container">
+            <span class="badge badge-academic mb-2">
+                <i class="bi bi-mortarboard-fill me-1"></i> Métodos Numéricos &amp; Cálculo 2
+            </span>
+            <h1 class="h2 fw-bold mb-1">Calculadora Numérica Interativa</h1>
+            <p class="text-white-50 mb-0">Resolução de Sistemas Lineares Iterativos e Interpolação Polinomial de Lagrange</p>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container my-4 flex-grow-1">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-9">
+
+                <!-- Alerta de Erros (Jinja2) -->
+                {% if erro %}
+                <div class="error-box mb-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Erro na Operação</h6>
+                            <p class="mb-0">{{ erro }}</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Painel de Resultados Estruturado (Jinja2) -->
+                {% if resultado_enxuto or resultado_exato %}
+                <div class="results-container mb-4">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center pb-2 mb-3 border-bottom">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill text-success fs-4 me-2"></i>
+                            <h5 class="fw-bold mb-0">
+                                {% if metodo == 'lagrange' %}
+                                    Resultado da Interpolação Polinomial
+                                {% else %}
+                                    Vetor Solução do Sistema Linear
+                                {% endif %}
+                            </h5>
+                        </div>
+                        {% if detalhe %}
+                        <span class="badge bg-primary px-3 py-2 rounded-pill mt-2 mt-sm-0">
+                            <i class="bi bi-arrow-repeat me-1"></i> {{ detalhe }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Versão Enxuta / Simplificada (Sem Casas Decimais) -->
+                        <div class="col-md-6">
+                            <div class="result-box-simple h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold text-success small text-uppercase">
+                                            <i class="bi bi-eye me-1"></i> Resultado Simplificado
+                                        </span>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                            Sem Casas Decimais
+                                        </span>
+                                    </div>
+                                    <div class="result-code text-success-emphasis">
+                                        {{ resultado_enxuto }}
+                                    </div>
+                                </div>
+                                <div class="helper-text text-success-emphasis opacity-75 mt-2">
+                                    Valores inteiros arredondados (np.around) para visualização direta.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Versão Exata / Notação Científica -->
+                        <div class="col-md-6">
+                            <div class="result-box-scientific h-100 d-flex flex-column justify-content-between">
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-bold text-primary small text-uppercase">
+                                            <i class="bi bi-cpu me-1"></i> Notação Científica
+                                        </span>
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            Precisão Total
+                                        </span>
+                                    </div>
+                                    <div class="result-code text-primary-emphasis">
+                                        {{ resultado_exato }}
+                                    </div>
+                                </div>
+                                <div class="helper-text text-primary-emphasis opacity-75 mt-2">
+                                    Padrão científico preservando todas as casas de precisão do cálculo.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Card Central com Abas -->
+                <div class="main-card p-4 p-md-5">
+
+                    <!-- Navegação entre os Módulos de Cálculo -->
+                    <ul class="nav nav-pills nav-fill mb-4 p-1 bg-light rounded" id="calcTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if metodo in ['jacobi', 'gauss_seidel', None] %}active{% endif %}" 
+                                    id="sistemas-tab" 
+                                    data-bs-toggle="pill" 
+                                    data-bs-target="#sistemas-content" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="sistemas-content" 
+                                    aria-selected="{% if metodo in ['jacobi', 'gauss_seidel', None] %}true{% else %}false{% endif %}">
+                                <i class="bi bi-grid-3x3 me-2"></i>Sistemas Lineares (Iterativos)
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if metodo == 'lagrange' %}active{% endif %}" 
+                                    id="interpolacao-tab" 
+                                    data-bs-toggle="pill" 
+                                    data-bs-target="#interpolacao-content" 
+                                    type="button" 
+                                    role="tab" 
+                                    aria-controls="interpolacao-content" 
+                                    aria-selected="{% if metodo == 'lagrange' %}true{% else %}false{% endif %}">
+                                <i class="bi bi-graph-up me-2"></i>Interpolação (Lagrange)
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="calcTabsContent">
+
+                        <!-- ========================================== -->
+                        <!-- 1. MÓDULO: SISTEMAS LINEARES (JACOBI / GS) -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade {% if metodo in ['jacobi', 'gauss_seidel', None] %}show active{% endif %}" 
+                             id="sistemas-content" 
+                             role="tabpanel" 
+                             aria-labelledby="sistemas-tab">
+                            
+                            <form action="/" method="POST" id="formSistemas">
+                                <!-- Seleção do Método Numérico -->
+                                <div class="mb-4">
+                                    <label for="metodo_sistema" class="form-label">
+                                        <i class="bi bi-sliders me-1"></i> Método Numérico Iterativo:
+                                    </label>
+                                    <select class="form-select fw-semibold" id="metodo_sistema" name="metodo" required>
+                                        <option value="jacobi" {% if metodo == 'jacobi' or not metodo %}selected{% endif %}>
+                                            Método de Jacobi (Convergência simultânea)
+                                        </option>
+                                        <option value="gauss_seidel" {% if metodo == 'gauss_seidel' %}selected{% endif %}>
+                                            Método de Gauss-Seidel (Convergência sucessiva)
+                                        </option>
+                                    </select>
+                                    <div class="helper-text">
+                                        Certifique-se de que a matriz seja estritamente diagonal dominante para garantir a convergência.
+                                    </div>
+                                </div>
+
+                                <!-- Matriz A -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label for="matriz" class="form-label mb-0">
+                                            Matriz de Coeficientes A (uma linha por equação):
+                                        </label>
+                                        <button type="button" class="btn btn-link btn-sm text-decoration-none p-0" onclick="carregarExemploSistema()">
+                                            <i class="bi bi-lightning-charge"></i> Inserir exemplo (3x3)
+                                        </button>
+                                    </div>
+                                    <textarea class="form-control code-font" 
+                                              id="matriz" 
+                                              name="matriz" 
+                                              rows="4" 
+                                              placeholder="Exemplo (3x3):&#10;10 2 1&#10;1 5 1&#10;2 3 10" 
+                                              required>{{ dados.get('matriz', '') }}</textarea>
+                                    <div class="helper-text">Separe os elementos da linha por espaço, vírgula ou ponto-e-vírgula. Quebre a linha para cada nova equação.</div>
+                                </div>
+
+                                <!-- Vetor b -->
+                                <div class="mb-3">
+                                    <label for="vetor" class="form-label">Vetor de Termos Independentes b:</label>
+                                    <input type="text" 
+                                           class="form-control code-font" 
+                                           id="vetor" 
+                                           name="vetor" 
+                                           value="{{ dados.get('vetor', '') }}" 
+                                           placeholder="Exemplo: 7 -8 6  (ou: 7, -8, 6)" 
+                                           required>
+                                    <div class="helper-text">Valores separados por espaço ou vírgula. A dimensão deve coincidir com o número de linhas da matriz A.</div>
+                                </div>
+
+                                <!-- Parâmetros Opcionais (Aproximação, Tolerância, Iterações) -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-5">
+                                        <label for="aproximacao" class="form-label">Aproximação Inicial x0 (Opcional):</label>
+                                        <input type="text" 
+                                               class="form-control code-font" 
+                                               id="aproximacao" 
+                                               name="aproximacao" 
+                                               value="{{ dados.get('aproximacao', '') }}" 
+                                               placeholder="Ex: 0 0 0 (Padrão: zeros)">
+                                        <div class="helper-text">Se omitido, inicia em zeros.</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="tolerancia" class="form-label">Critério de Parada (Tolerância):</label>
+                                        <input type="text" 
+                                               class="form-control code-font" 
+                                               id="tolerancia" 
+                                               name="tolerancia" 
+                                               value="{{ dados.get('tolerancia', '1e-5') }}" 
+                                               required>
+                                        <div class="helper-text">Ex: 1e-5, 0.0001</div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="max_iteracoes" class="form-label">Máx. Iterações:</label>
+                                        <input type="number" 
+                                               class="form-control code-font" 
+                                               id="max_iteracoes" 
+                                               name="max_iteracoes" 
+                                               value="{{ dados.get('max_iteracoes', '100') }}" 
+                                               min="1" 
+                                               max="5000" 
+                                               required>
+                                        <div class="helper-text">Limite de iterações.</div>
+                                    </div>
+                                </div>
+
+                                <!-- Botões de Ação -->
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-calc flex-grow-1">
+                                        <i class="bi bi-play-circle me-1"></i> Resolver Sistema Linear
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="limparCamposSistema()">
+                                        <i class="bi bi-eraser"></i> Limpar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- ========================================== -->
+                        <!-- 2. MÓDULO: INTERPOLAÇÃO POLINOMIAL         -->
+                        <!-- ========================================== -->
+                        <div class="tab-pane fade {% if metodo == 'lagrange' %}show active{% endif %}" 
+                             id="interpolacao-content" 
+                             role="tabpanel" 
+                             aria-labelledby="interpolacao-tab">
+                            
+                            <form action="/" method="POST" id="formLagrange">
+                                <!-- Identificador do Método para o Flask -->
+                                <input type="hidden" name="metodo" value="lagrange">
+
+                                <!-- Conjunto de Pontos Amostrais -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label for="pontos" class="form-label mb-0">
+                                            Pontos Amostrais (x, y) (um par ordenado por linha):
+                                        </label>
+                                        <button type="button" class="btn btn-link btn-sm text-decoration-none p-0" onclick="carregarExemploLagrange()">
+                                            <i class="bi bi-lightning-charge"></i> Inserir pontos de exemplo
+                                        </button>
+                                    </div>
+                                    <textarea class="form-control code-font" 
+                                              id="pontos" 
+                                              name="pontos" 
+                                              rows="5" 
+                                              placeholder="Exemplo (pares x y):&#10;0 1&#10;1 3&#10;2 2&#10;4 5" 
+                                              required>{{ dados.get('pontos', '') }}</textarea>
+                                    <div class="helper-text">Informe um par (x, y) por linha, separados por espaço ou vírgula. As abscissas x devem ser todas distintas.</div>
+                                </div>
+
+                                <!-- Ponto x para interpolação -->
+                                <div class="mb-4">
+                                    <label for="x_interpolacao" class="form-label">
+                                        Ponto de Avaliação x (onde calcular P(x)):
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control code-font" 
+                                           id="x_interpolacao" 
+                                           name="x_interpolacao" 
+                                           value="{{ dados.get('x_interpolacao', '') }}" 
+                                           placeholder="Exemplo: 1.5 ou 2.75" 
+                                           required>
+                                    <div class="helper-text">Valor da abscissa onde o polinômio interpolador de Lagrange será calculado.</div>
+                                </div>
+
+                                <!-- Botões de Ação -->
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-calc flex-grow-1">
+                                        <i class="bi bi-calculator me-1"></i> Calcular Interpolação P(x)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="limparCamposLagrange()">
+                                        <i class="bi bi-eraser"></i> Limpar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Card Informativo Acadêmico -->
+                <div class="card mt-4 border-0 bg-transparent text-center text-muted small">
+                    <p class="mb-1">
+                        <i class="bi bi-shield-check text-primary"></i> 
+                        Validação de dados em conformidade com o critério de parada ||x(k+1) - x(k)|| &lt; tol e unicidade dos pontos amostrais.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Rodapé -->
+    <footer class="text-center">
+        <div class="container">
+            <p class="mb-0">
+                Calculadora Numérica Interativa &bull; Projeto Integrado de Engenharia &bull; 
+                Ambiente de Simulação e Métodos Numéricos
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script de Utilidades e Carregamento Rápido de Exemplos -->
+    <script>
+        function carregarExemploSistema() {
+            document.getElementById('matriz').value = "10 2 1\n1 5 1\n2 3 10";
+            document.getElementById('vetor').value = "7 -8 6";
+            document.getElementById('aproximacao').value = "0 0 0";
+            document.getElementById('tolerancia').value = "1e-5";
+            document.getElementById('max_iteracoes').value = "100";
+        }
+
+        function limparCamposSistema() {
+            document.getElementById('matriz').value = "";
+            document.getElementById('vetor').value = "";
+            document.getElementById('aproximacao').value = "";
+            document.getElementById('tolerancia').value = "1e-5";
+            document.getElementById('max_iteracoes').value = "100";
+        }
+
+        function carregarExemploLagrange() {
+            document.getElementById('pontos').value = "0 1\n1 3\n2 2\n4 5";
+            document.getElementById('x_interpolacao').value = "1.5";
+        }
+
+        function limparCamposLagrange() {
+            document.getElementById('pontos').value = "";
+            document.getElementById('x_interpolacao').value = "";
+        }
+    </script>
+</body>
+</html>
